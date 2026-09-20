@@ -1,1 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <ItemGroup>
+    <Filter Include="Include">
+      <UniqueIdentifier>{10000000-0000-0000-0000-000000000001}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source">
+      <UniqueIdentifier>{10000000-0000-0000-0000-000000000002}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\App">
+      <UniqueIdentifier>{10000000-0000-0000-0000-000000000003}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Core">
+      <UniqueIdentifier>{10000000-0000-0000-0000-000000000004}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Network">
+      <UniqueIdentifier>{10000000-0000-0000-0000-000000000005}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Install">
+      <UniqueIdentifier>{10000000-0000-0000-0000-000000000006}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\UI">
+      <UniqueIdentifier>{10000000-0000-0000-0000-000000000007}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source\Platform">
+      <UniqueIdentifier>{10000000-0000-0000-0000-000000000008}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClCompile Include="Source\App\main.cpp">
+      <Filter>Source\App</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Log\Log.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Ini\Ini.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Core\Config\Config.cpp">
+      <Filter>Source\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Network\Http\Http.cpp">
+      <Filter>Source\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Network\Repo\Repo.cpp">
+      <Filter>Source\Network</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Install\Installer.cpp">
+      <Filter>Source\Install</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UI\Ui.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UI\UiMenu.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\UI\UiDialog.cpp">
+      <Filter>Source\UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Platform\Xbox360\PlatformXbox.cpp">
+      <Filter>Source\Platform</Filter>
+    </ClCompile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClInclude Include="Include\Anaconda.h">
+      <Filter>Include</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Log\Log.h">
+      <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Ini\Ini.h">
+      <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Core\Config\Config.h">
+      <Filter>Source\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Network\Http\Http.h">
+      <Filter>Source\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Network\Repo\Repo.h">
+      <Filter>Source\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Install\Installer.h">
+      <Filter>Source\Install</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\UI\Ui.h">
+      <Filter>Source\UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Platform\Platform.h">
+      <Filter>Source\Platform</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
