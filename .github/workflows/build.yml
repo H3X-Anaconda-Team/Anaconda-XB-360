@@ -1,1 +1,36 @@
+name: Build Anaconda XB 360
 
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Build solution
+        run: msbuild AnacondaXB360.sln /p:Configuration=Release /p:Platform="Xbox 360"
+        continue-on-error: true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AnacondaXB360-xex
+          path: Build/**/*.xex
+          if-no-files-found: warn
+
+# NOTE: GitHub's hosted runners do NOT have the Xbox 360 XDK
+# installed, and the XDK is not publicly distributable. This
+# workflow is a template. To actually build in CI you must use
+# a self-hosted runner with the XDK installed, or switch to
+# libxenon (whose toolchain CAN run in CI).
