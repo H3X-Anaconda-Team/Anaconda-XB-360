@@ -1,1 +1,47 @@
+# --- Build output ---
+Build/*
+!Build/.gitkeep
+*.xex
+*.elf
+*.obj
+*.pdb
+*.ilk
+*.map
 
+# --- Visual Studio ---
+.vs/
+*.suo
+*.user
+*.sln.docstates
+*.VC.db
+ipch/
+Debug/
+Release/
+x64/
+x86/
+
+# --- Xbox 360 XDK ---
+*.xdk
+*.xdb
+*.xbx
+
+# --- OS junk ---
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# --- IDE ---
+.vscode/
+.idea/
+*.swp
+
+# --- Large archives (use Releases, not the repo) ---
+*.7z
+*.zip
+*.rar
+
+# --- Keep .gitkeep everywhere so folders persist ---
+!.gitkeep
+
+# --- Logs ---
+*.log
