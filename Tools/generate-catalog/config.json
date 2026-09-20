@@ -1,0 +1,22 @@
+{
+  "repo_user": "H3X-Anaconda-Team",
+  "repo_name": "anaconda-xb-360",
+  "repo_branch": "main",
+
+  "content_dir": "Catalog/Content",
+  "categories_dir": "Catalog/Categories",
+
+  "category_map": {
+    "Apps":      { "ini": "apps.ini",      "path": "/Apps/" },
+    "Games":     { "ini": "games.ini",     "path": "/Games/" },
+    "Emulators": { "ini": "emulators.ini", "path": "/Emulators/" },
+    "Themes":    { "ini": "themes.ini",    "path": "/Themes/" }
+  },
+
+  "defaults": {
+    "itemVersion":     "1.0",
+    "itemAuthor":      "H3X Anaconda Team",
+    "itemDescription": "Auto-generated entry.",
+    "reload":          "True"
+  }
+}
