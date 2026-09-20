@@ -1,1 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0"
+         xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Xbox 360">
+      <Configuration>Debug</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Xbox 360">
+      <Configuration>Release</Configuration>
+      <Platform>Xbox 360</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{5A9F5F5E-5A5F-4A5F-9F5F-5A5F5A5F5A5F}</ProjectGuid>
+    <RootNamespace>AnacondaXB360</RootNamespace>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+
+  <PropertyGroup Condition="'$(Configuration)'=='Release'"
+                 Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'"
+                 Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+
+  <PropertyGroup>
+    <OutDir>$(SolutionDir)Build\</OutDir>
+    <IntDir>$(SolutionDir)Build\obj\</IntDir>
+    <TargetName>AnacondaXB360</TargetName>
+  </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include;$(ProjectDir)Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_XBOX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+
+  <ItemGroup>
+    <ClCompile Include="Source\App\main.cpp" />
+    <ClCompile Include="Source\Core\Log\Log.cpp" />
+    <ClCompile Include="Source\Core\Ini\Ini.cpp" />
+    <ClCompile Include="Source\Core\Config\Config.cpp" />
+    <ClCompile Include="Source\Network\Http\Http.cpp" />
+    <ClCompile Include="Source\Network\Repo\Repo.cpp" />
+    <ClCompile Include="Source\Install\Installer.cpp" />
+    <ClCompile Include="Source\UI\Ui.cpp" />
+    <ClCompile Include="Source\UI\UiMenu.cpp" />
+    <ClCompile Include="Source\UI\UiDialog.cpp" />
+    <!-- Compile ONE of these two, never both. -->
+    <ClCompile Include="Source\Platform\Xbox360\PlatformXbox.cpp" />
+    <!-- <ClCompile Include="Source\Platform\Desktop\PlatformDesktop.cpp" /> -->
+  </ItemGroup>
+
+  <ItemGroup>
+    <ClInclude Include="Include\Anaconda.h" />
+    <ClInclude Include="Source\Core\Log\Log.h" />
+    <ClInclude Include="Source\Core\Ini\Ini.h" />
+    <ClInclude Include="Source\Core\Config\Config.h" />
+    <ClInclude Include="Source\Network\Http\Http.h" />
+    <ClInclude Include="Source\Network\Repo\Repo.h" />
+    <ClInclude Include="Source\Install\Installer.h" />
+    <ClInclude Include="Source\UI\Ui.h" />
+    <ClInclude Include="Source\Platform\Platform.h" />
+  </ItemGroup>
+
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>
