@@ -34,8 +34,10 @@ namespace Platform {
                             void (*progress)(size_t, size_t) = nullptr);
 
     // ---------------- Archive ----------------
-    bool Extract7z(const std::string& archivePath,
-                   const std::string& destDir);
+    // Extracts a .zip archive into destDir.
+    // Creates destDir if it does not exist.
+    bool ExtractZip(const std::string& archivePath,
+                    const std::string& destDir);
 
     // ---------------- UI primitives ----------------
     void UiInit();
