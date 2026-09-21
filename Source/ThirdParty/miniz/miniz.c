@@ -3502,7 +3502,7 @@ static int mz_stat64(const char *path, struct __stat64 *buffer)
     t.modtime = modified_time;
     return !utime(pFilename, &t);
 }
-        return !utime(pFilename, &t);
+
     }
 #endif /* #ifndef MINIZ_NO_STDIO */
 #endif /* #ifndef MINIZ_NO_TIME */
