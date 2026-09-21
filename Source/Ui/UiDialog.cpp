@@ -1,18 +1,10 @@
 // ============================================================
-// UiDialog - specialised dialog widgets
+// UiDialog - placeholder for future dialogs
 // ------------------------------------------------------------
-// This file is reserved for dialogs that are more complex than
-// the basic Menu / Message / Confirm set in Ui.cpp.
-//
-// Currently empty. Planned additions for v1.1.0:
-//   - Progress dialog for long downloads
-//   - Multi-step wizard for first-run setup
-//   - Package detail view with description + screenshot
-//
-// When you add a dialog, declare it in Ui.h and implement it
-// here. Keep Ui.cpp focused on the primitives.
+// Reserved for progress bars, wizards, and package detail
+// views. Currently empty.
 // ============================================================
 
-#include "Ui.h"
+#include "UI/Ui.h"
 
 // Nothing here yet.
