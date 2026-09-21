@@ -1,12 +1,8 @@
 // ============================================================
 // UiMenu - the scrollable list widget
-// ------------------------------------------------------------
-// Split from Ui.cpp so the list logic (scrolling, wraparound,
-// selection highlight) lives on its own. Ui.cpp handles the
-// smaller dialogs.
 // ============================================================
 
-#include "Ui.h"
+#include "UI/Ui.h"
 #include "Platform/Platform.h"
 #include "Core/Log/Log.h"
 
@@ -73,17 +69,13 @@ int Menu(const std::string& title,
     while (true) {
         Platform::UiClear();
 
-        // Background
         Platform::UiRect(0, 0, SCREEN_W, SCREEN_H, COL_BG);
 
-        // Title
         Platform::UiText(MARGIN_X, TITLE_Y, title, COL_TITLE);
 
-        // Divider
         Platform::UiRect(MARGIN_X, TITLE_Y + 50,
                          SCREEN_W - 2 * MARGIN_X, 2, COL_TITLE);
 
-        // Items
         scrollTop = ClampScroll(selected, scrollTop, total);
 
         for (int row = 0; row < MAX_VISIBLE; ++row) {
@@ -104,7 +96,6 @@ int Menu(const std::string& title,
             }
         }
 
-        // Scroll indicator
         if (total > MAX_VISIBLE) {
             std::string pos = std::to_string(selected + 1)
                             + " / "
@@ -113,13 +104,11 @@ int Menu(const std::string& title,
                              TITLE_Y, pos, COL_HINT);
         }
 
-        // Footer hint
         Platform::UiText(MARGIN_X, SCREEN_H - 50,
                          "A = Select   B = Back", COL_HINT);
 
         Platform::UiPresent();
 
-        // Input
         Platform::Button b = Platform::PollInput();
 
         if (b == Platform::BTN_UP) {
