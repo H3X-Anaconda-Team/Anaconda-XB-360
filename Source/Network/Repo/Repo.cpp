@@ -8,20 +8,11 @@
 
 namespace Repo {
 
-// ------------------------------------------------------------
-// Helpers
-// ------------------------------------------------------------
-
-// Returns true if a category name looks like an external repo.
 static bool LooksExternal(const std::string& name) {
     return  name.find("Free60")   != std::string::npos
          || name.find("X-Store")  != std::string::npos
          || name.find("External") != std::string::npos;
 }
-
-// ------------------------------------------------------------
-// LoadCategories
-// ------------------------------------------------------------
 
 bool LoadCategories(const std::string& repoUrl,
                     std::vector<Category>& out) {
@@ -55,21 +46,13 @@ bool LoadCategories(const std::string& repoUrl,
         return false;
     }
 
-    // Locals first, then externals
     out.reserve(locals.size() + externals.size());
     out.insert(out.end(), locals.begin(), locals.end());
     out.insert(out.end(), externals.begin(), externals.end());
 
-    Log::Info("Loaded " + std::to_string(out.size()) + " categories "
-              "(" + std::to_string(locals.size()) + " local, "
-              + std::to_string(externals.size()) + " external)");
-
+    Log::Info("Loaded " + std::to_string(out.size()) + " categories");
     return true;
 }
-
-// ------------------------------------------------------------
-// LoadPackages
-// ------------------------------------------------------------
 
 bool LoadPackages(const std::string& categoryUrl,
                   std::vector<Package>& out) {
@@ -88,13 +71,25 @@ bool LoadPackages(const std::string& categoryUrl,
 
         Package p;
         p.id          = s.name;
-        p.dataurl     = s.Get("dataurl");
         p.title       = s.Get("itemTitle",       s.name);
         p.version     = s.Get("itemVersion",     "?");
         p.author      = s.Get("itemAuthor",      "Unknown");
         p.description = s.Get("itemDescription", "");
         p.path        = s.Get("path", "/Apps/" + s.name + "/");
         p.reload      = (s.Get("reload", "False") == "True");
+
+        // Collect every part in order: dataurl, dataurlpart2, dataurlpart3, ...
+        p.dataurls.push_back(s.Get("dataurl"));
+
+        int partN = 2;
+        while (true) {
+            std::string key = "dataurlpart" + std::to_string(partN);
+            if (!s.Has(key)) break;
+
+            std::string url = s.Get(key);
+            if (!url.empty()) p.dataurls.push_back(url);
+            ++partN;
+        }
 
         out.push_back(p);
     }
