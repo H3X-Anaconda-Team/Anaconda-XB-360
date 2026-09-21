@@ -21,7 +21,7 @@
     <Filter Include="Source\Install">
       <UniqueIdentifier>{10000000-0000-0000-0000-000000000006}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source\UI">
+    <Filter Include="Source\Ui">
       <UniqueIdentifier>{10000000-0000-0000-0000-000000000007}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source\Platform">
@@ -57,16 +57,16 @@
     <ClCompile Include="Source\Install\Installer.cpp">
       <Filter>Source\Install</Filter>
     </ClCompile>
-    <ClCompile Include="Source\UI\Ui.cpp">
-      <Filter>Source\UI</Filter>
+    <ClCompile Include="Source\Ui\Ui.cpp">
+      <Filter>Source\Ui</Filter>
     </ClCompile>
-    <ClCompile Include="Source\UI\UiMenu.cpp">
-      <Filter>Source\UI</Filter>
+    <ClCompile Include="Source\Ui\UiMenu.cpp">
+      <Filter>Source\Ui</Filter>
     </ClCompile>
-    <ClCompile Include="Source\UI\UiDialog.cpp">
-      <Filter>Source\UI</Filter>
+    <ClCompile Include="Source\Ui\UiDialog.cpp">
+      <Filter>Source\Ui</Filter>
     </ClCompile>
-    <ClCompile Include="Source\Platform\Xbox360\PlatformXbox.cpp.xdk-backup">
+    <ClCompile Include="Source\Platform\Xbox360\PlatformXbox.cpp">
       <Filter>Source\Platform</Filter>
     </ClCompile>
     <ClCompile Include="Source\ThirdParty\miniz\miniz.c">
@@ -96,8 +96,8 @@
     <ClInclude Include="Source\Install\Installer.h">
       <Filter>Source\Install</Filter>
     </ClInclude>
-    <ClInclude Include="Source\UI\Ui.h">
-      <Filter>Source\UI</Filter>
+    <ClInclude Include="Source\Ui\Ui.h">
+      <Filter>Source\Ui</Filter>
     </ClInclude>
     <ClInclude Include="Source\Platform\Platform.h">
       <Filter>Source\Platform</Filter>
