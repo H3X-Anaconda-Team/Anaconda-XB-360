@@ -26,9 +26,9 @@ CXX_SRC = \
     Source/Network/Http/Http.cpp \
     Source/Network/Repo/Repo.cpp \
     Source/Install/Installer.cpp \
-    Source/UI/Ui.cpp \
-    Source/UI/UiMenu.cpp \
-    Source/UI/UiDialog.cpp \
+    Source/Ui/Ui.cpp \
+    Source/Ui/UiMenu.cpp \
+    Source/Ui/UiDialog.cpp \
     Source/Platform/Xbox360/PlatformXbox.cpp
 
 C_SRC = \
