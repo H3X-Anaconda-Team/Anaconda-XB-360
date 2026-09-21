@@ -8,12 +8,12 @@ CC  = $(DEVKITXENON)/bin/xenon-gcc
 CXX = $(DEVKITXENON)/bin/xenon-g++
 LD  = $(DEVKITXENON)/bin/xenon-ld
 
-INCLUDES = -IInclude -ISource -ISource/ThirdParty/miniz
+INCLUDES = -IInclude -ISource -ISource/ThirdParty/miniz -I$(DEVKITXENON)/usr/include
 
 CXXFLAGS = -O2 -Wall -std=c++11 -D_XBOX $(INCLUDES)
 CFLAGS   = -O2 -Wall -D_XBOX $(INCLUDES)
 
-LDFLAGS = -L$(DEVKITXENON)/lib -lxenon -lm -lz
+LDFLAGS = -L$(DEVKITXENON)/lib -L$(DEVKITXENON)/usr/lib -lxenon -lm -lz
 
 TARGET = Build/AnacondaXB360.elf
 XEX    = Build/AnacondaXB360.xex
