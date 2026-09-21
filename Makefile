@@ -1,18 +1,19 @@
 # ============================================================
-# Anaconda XB 360 - minimal build (32-bit target)
+# Anaconda XB 360 - libxenon build
 # ============================================================
 
 DEVKITXENON ?= /usr/local/xenon
 
 CC  = $(DEVKITXENON)/bin/xenon-gcc
 CXX = $(DEVKITXENON)/bin/xenon-g++
+LD  = $(DEVKITXENON)/bin/xenon-ld
 
-INCLUDES = -IInclude -ISource -ISource/ThirdParty/miniz
+INCLUDES = -IInclude -ISource -ISource/ThirdParty/miniz -I$(DEVKITXENON)/usr/include -I$(DEVKITXENON)/xenon/include
 
-CXXFLAGS = -m32 -O2 -Wall -std=c++11 -D_XBOX $(INCLUDES)
-CFLAGS   = -m32 -O2 -Wall -D_XBOX $(INCLUDES)
+CXXFLAGS = -O2 -Wall -std=c++11 -D_XBOX $(INCLUDES)
+CFLAGS   = -O2 -Wall -D_XBOX $(INCLUDES)
 
-LDFLAGS = -m32 -lm
+LDFLAGS = -L$(DEVKITXENON)/lib -L$(DEVKITXENON)/usr/lib -lxenon -lm
 
 TARGET = Build/AnacondaXB360.elf
 XEX    = Build/AnacondaXB360.xex
