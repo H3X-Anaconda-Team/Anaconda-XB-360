@@ -12,7 +12,7 @@
 #include "Core/Config/Config.h"
 #include "Network/Repo/Repo.h"
 #include "Install/Installer.h"
-#include "UI/Ui.h"
+#include "Ui/Ui.h"
 #include "Platform/Platform.h"
 
 #include <string>
