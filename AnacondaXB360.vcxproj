@@ -57,13 +57,10 @@
     <ClCompile Include="Source\Network\Http\Http.cpp" />
     <ClCompile Include="Source\Network\Repo\Repo.cpp" />
     <ClCompile Include="Source\Install\Installer.cpp" />
-    <ClCompile Include="Source\UI\Ui.cpp" />
-    <ClCompile Include="Source\UI\UiMenu.cpp" />
-    <ClCompile Include="Source\UI\UiDialog.cpp" />
-    <!-- Only include the XDK platform file for Visual Studio builds -->
-    <ClCompile Include="Source\Platform\Xbox360\PlatformXbox.cpp.xdk-backup" />
-    <!-- The following is excluded from the XDK build because the Makefile uses it instead: -->
-    <!-- <ClCompile Include="Source\Platform\Xbox360\PlatformXbox.cpp" /> -->
+    <ClCompile Include="Source\Ui\Ui.cpp" />
+    <ClCompile Include="Source\Ui\UiMenu.cpp" />
+    <ClCompile Include="Source\Ui\UiDialog.cpp" />
+    <ClCompile Include="Source\Platform\Xbox360\PlatformXbox.cpp" />
     <ClCompile Include="Source\ThirdParty\miniz\miniz.c" />
   </ItemGroup>
 
@@ -75,7 +72,7 @@
     <ClInclude Include="Source\Network\Http\Http.h" />
     <ClInclude Include="Source\Network\Repo\Repo.h" />
     <ClInclude Include="Source\Install\Installer.h" />
-    <ClInclude Include="Source\UI\Ui.h" />
+    <ClInclude Include="Source\Ui\Ui.h" />
     <ClInclude Include="Source\Platform\Platform.h" />
     <ClInclude Include="Source\ThirdParty\miniz\miniz.h" />
   </ItemGroup>
