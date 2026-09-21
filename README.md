@@ -43,6 +43,13 @@ Watch the repo or star it to be notified the moment a build goes public.
 
 ## Connect
 
+<a href="https://discord.gg/xzjnXDXyV8" target="_blank">
+  <img src="https://readme-typing-svg.demolab.com?font=Segoe+UI&weight=700&size=24&duration=3000&pause=800&color=39FF14&center=true&vCenter=true&width=500&height=45&lines=Join+the+Discord;Anaconda+XB+360+Community;Get+help+and+updates" alt="Discord" />
+</a>
+
+<br>
+
+[![Discord](https://img.shields.io/badge/Discord-Anaconda_XB_360-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/xzjnXDXyV8)
 [![Telegram](https://img.shields.io/badge/Telegram-Anaconda_XB_360-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/anacondaxbox)
 
 *More socials coming soon.*
