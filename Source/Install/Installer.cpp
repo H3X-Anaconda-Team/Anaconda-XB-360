@@ -54,7 +54,7 @@ bool Install(const Package& pkg,
 
     Ui::Message("Downloading", pkg.title + "\n\nPlease wait...");
 
-    std::string tempArchive = ANACONDA_TEMP_7Z;
+    std::string tempArchive = ANACONDA_TEMP_ZIP;
 
     if (!Http::DownloadToFile(pkg.dataurl, tempArchive, progress)) {
         Log::Error("Download failed: " + pkg.dataurl);
