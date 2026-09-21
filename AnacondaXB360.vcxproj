@@ -44,7 +44,7 @@
 
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)Include;$(ProjectDir)Source;$(ProjectDir)Source\ThirdParty\miniz;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Source;$(ProjectDir)Source\App;$(ProjectDir)Source\ThirdParty\miniz;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_XBOX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -65,7 +65,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ClInclude Include="Include\Anaconda.h" />
+    <ClInclude Include="Source\App\Anaconda.h" />
     <ClInclude Include="Source\Core\Log\Log.h" />
     <ClInclude Include="Source\Core\Ini\Ini.h" />
     <ClInclude Include="Source\Core\Config\Config.h" />
