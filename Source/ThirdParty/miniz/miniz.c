@@ -1,4 +1,5 @@
 #include "miniz.h"
+#define MINIZ_NO_TIME
 /**************************************************************************
  *
  * Copyright 2013-2014 RAD Game Tools and Valve Software
