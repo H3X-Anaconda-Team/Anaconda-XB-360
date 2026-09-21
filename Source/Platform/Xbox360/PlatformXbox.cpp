@@ -140,7 +140,7 @@ bool ExtractZip(const std::string& archivePath,
 }
 
 // ============================================================
-// UI
+// UI - uses plain printf, libxenon console_init() redirects it
 // ============================================================
 
 void UiInit() {
@@ -151,15 +151,16 @@ void UiInit() {
 void UiShutdown() {}
 
 void UiClear() {
-    console_clrscr();
+    // Simple newline scroll. Replace with console_clrscr() later
+    // once the correct function name for your libxenon is known.
+    for (int i = 0; i < 30; ++i) printf("\n");
 }
 
 void UiText(int x, int y, const std::string& text, unsigned color) {
-    console_set_pos(x, y);
-    console_set_color((color >> 16) & 0xFF,
-                      (color >> 8)  & 0xFF,
-                       color        & 0xFF);
-    console_printf("%s\n", text.c_str());
+    (void)x;
+    (void)y;
+    (void)color;
+    printf("%s\n", text.c_str());
 }
 
 void UiRect(int, int, int, int, unsigned) {}
@@ -182,8 +183,7 @@ Button PollInput() {
 bool ShowKeyboard(const std::string& title,
                   const std::string& initial,
                   std::string& out) {
-    console_set_pos(0, 20);
-    console_printf("%s [%s]: ", title.c_str(), initial.c_str());
+    printf("%s [%s]: ", title.c_str(), initial.c_str());
 
     char buf[512];
     if (!fgets(buf, sizeof(buf), stdin)) return false;
