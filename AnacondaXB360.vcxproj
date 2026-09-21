@@ -44,7 +44,7 @@
 
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>$(ProjectDir)Include;$(ProjectDir)Source;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)Include;$(ProjectDir)Source;$(ProjectDir)Source\ThirdParty\miniz;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_XBOX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
   </ItemDefinitionGroup>
@@ -60,9 +60,11 @@
     <ClCompile Include="Source\UI\Ui.cpp" />
     <ClCompile Include="Source\UI\UiMenu.cpp" />
     <ClCompile Include="Source\UI\UiDialog.cpp" />
-    <!-- Compile ONE of these two, never both. -->
-    <ClCompile Include="Source\Platform\Xbox360\PlatformXbox.cpp" />
-    <!-- <ClCompile Include="Source\Platform\Desktop\PlatformDesktop.cpp" /> -->
+    <!-- Only include the XDK platform file for Visual Studio builds -->
+    <ClCompile Include="Source\Platform\Xbox360\PlatformXbox.cpp.xdk-backup" />
+    <!-- The following is excluded from the XDK build because the Makefile uses it instead: -->
+    <!-- <ClCompile Include="Source\Platform\Xbox360\PlatformXbox.cpp" /> -->
+    <ClCompile Include="Source\ThirdParty\miniz\miniz.c" />
   </ItemGroup>
 
   <ItemGroup>
@@ -75,6 +77,7 @@
     <ClInclude Include="Source\Install\Installer.h" />
     <ClInclude Include="Source\UI\Ui.h" />
     <ClInclude Include="Source\Platform\Platform.h" />
+    <ClInclude Include="Source\ThirdParty\miniz\miniz.h" />
   </ItemGroup>
 
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
