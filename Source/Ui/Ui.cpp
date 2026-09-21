@@ -1,14 +1,11 @@
-#include "UI/Ui.h"
+
+#include "Ui/Ui.h"
 #include "Platform/Platform.h"
 #include "Core/Log/Log.h"
 
 #include <string>
 
 namespace Ui {
-
-// ------------------------------------------------------------
-// Shared layout constants
-// ------------------------------------------------------------
 
 static const int SCREEN_W      = 1280;
 static const int SCREEN_H      = 720;
@@ -22,10 +19,6 @@ static const unsigned COL_TITLE    = 0x39FF14;
 static const unsigned COL_TEXT     = 0xE0E0E0;
 static const unsigned COL_SELECTED = 0x107C10;
 static const unsigned COL_HINT     = 0x808080;
-
-// ------------------------------------------------------------
-// Helper - draw a body string, splitting on '\n'
-// ------------------------------------------------------------
 
 static void DrawMultilineBody(const std::string& body,
                               int startY,
@@ -47,10 +40,6 @@ static void DrawMultilineBody(const std::string& body,
 static void DrawFooterHint(const std::string& text) {
     Platform::UiText(MARGIN_X, SCREEN_H - 50, text, COL_HINT);
 }
-
-// ------------------------------------------------------------
-// Message
-// ------------------------------------------------------------
 
 void Message(const std::string& title,
              const std::string& body) {
@@ -74,10 +63,6 @@ void Message(const std::string& title,
         }
     }
 }
-
-// ------------------------------------------------------------
-// Confirm
-// ------------------------------------------------------------
 
 bool Confirm(const std::string& title,
              const std::string& body) {
@@ -103,10 +88,6 @@ bool Confirm(const std::string& title,
         if (b == Platform::BTN_B || b == Platform::BTN_BACK) return false;
     }
 }
-
-// ------------------------------------------------------------
-// Prompt
-// ------------------------------------------------------------
 
 bool Prompt(const std::string& title,
             const std::string& initial,
