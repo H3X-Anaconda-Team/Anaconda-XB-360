@@ -14,7 +14,7 @@ Free60 Store (951261/X-Store).
 
 [Report a Bug](https://github.com/H3X-Anaconda-Team/anaconda-xb-360/issues) ·
 [Request a Feature](https://github.com/H3X-Anaconda-Team/anaconda-xb-360/issues) ·
-[Website](https://h3x-anaconda-team.github.io/anaconda-xb-360-website/)
+[Website](https://h3x-anaconda-team.github.io/Anaconda-XB-360-website/)
 
 </div>
 
