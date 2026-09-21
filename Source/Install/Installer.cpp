@@ -2,7 +2,7 @@
 #include "Network/Http/Http.h"
 #include "Platform/Platform.h"
 #include "Core/Log/Log.h"
-#include "UI/Ui.h"
+#include "Ui/Ui.h"
 
 #include <string>
 #include <cstddef>
