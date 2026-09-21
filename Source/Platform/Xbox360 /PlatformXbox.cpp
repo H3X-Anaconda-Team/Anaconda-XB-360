@@ -3,9 +3,7 @@
 // ------------------------------------------------------------
 // Uses POSIX APIs and libxenon extensions. Builds with xenon-gcc.
 //
-// If you want to keep the original XDK implementation, it lives
-// in PlatformXbox.cpp.xdk-backup. Switch between them by renaming
-// whichever one you want to build.
+// Build with:  make
 // ============================================================
 
 #include "Platform/Platform.h"
@@ -27,7 +25,6 @@ extern "C" {
     #include <input/input.h>
     #include <console/console.h>
     #include <network/network.h>
-    #include <network/http/http.h>
     #include <xenos/xe.h>
     #include <xenos/xenos.h>
     #include <xenos/edram.h>
@@ -95,28 +92,10 @@ bool DeleteFile(const std::string& path) {
 // ============================================================
 
 bool HttpGet(const std::string& url, std::string& out) {
-    // libxenon ships a small HTTP helper under network/http.
-    // If your libxenon build doesn't have it, use the raw socket
-    // version instead.
-    struct http_request req;
-    struct http_response res;
-
-    memset(&req, 0, sizeof(req));
-    memset(&res, 0, sizeof(res));
-
-    req.url = (char*)url.c_str();
-
-    if (http_get(&req, &res) != 0) {
-        return false;
-    }
-
-    if (res.data && res.size > 0) {
-        out.assign((const char*)res.data, res.size);
-        http_free_response(&res);
-        return true;
-    }
-
-    http_free_response(&res);
+    // Placeholder — replace with libxenon socket code once you
+    // know which HTTP helper your libxenon build ships.
+    Log::Warn("HttpGet stub called for: " + url);
+    out.clear();
     return false;
 }
 
@@ -146,14 +125,14 @@ bool ExtractZip(const std::string& archivePath,
     int count = (int)mz_zip_reader_get_num_files(&zip);
 
     for (int i = 0; i < count; ++i) {
-        mz_zip_archive_file_stat stat;
-        if (!mz_zip_reader_file_stat(&zip, i, &stat)) continue;
+        mz_zip_archive_file_stat st;
+        if (!mz_zip_reader_file_stat(&zip, i, &st)) continue;
 
         std::string fullPath = destDir;
         if (!fullPath.empty() && fullPath.back() != '\\' && fullPath.back() != '/') {
             fullPath += "/";
         }
-        fullPath += stat.m_filename;
+        fullPath += st.m_filename;
 
         if (mz_zip_reader_is_file_a_directory(&zip, i)) {
             CreateDir(fullPath);
@@ -198,11 +177,10 @@ void UiText(int x, int y, const std::string& text, unsigned color) {
 
 void UiRect(int, int, int, int, unsigned) {
     // Basic libxenon console doesn't support rectangles.
-    // For a proper UI, replace this with xenos framebuffer code.
 }
 
 void UiPresent() {
-    // console_printf is drawn directly — no explicit present needed.
+    // console_printf draws directly.
 }
 
 // ============================================================
@@ -211,11 +189,6 @@ void UiPresent() {
 
 Button PollInput() {
     usb_do_poll();
-
-    // libxenon input layer exposes a pad state after polling.
-    // Adjust to match your libxenon version's actual API.
-    // This is a placeholder — check the libxenon input sample
-    // for the exact function names.
     return BTN_NONE;
 }
 
@@ -243,8 +216,6 @@ bool ShowKeyboard(const std::string& title,
 // ============================================================
 
 void ReloadAurora() {
-    // Aurora isn't running when a libxenon app is booted via XeLL.
-    // Log only.
     Log::Info("ReloadAurora() called (no-op under libxenon)");
 }
 
