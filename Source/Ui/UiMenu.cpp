@@ -1,8 +1,5 @@
-// ============================================================
-// UiMenu - the scrollable list widget
-// ============================================================
 
-#include "UI/Ui.h"
+#include "Ui/Ui.h"
 #include "Platform/Platform.h"
 #include "Core/Log/Log.h"
 
@@ -10,10 +7,6 @@
 #include <vector>
 
 namespace Ui {
-
-// ------------------------------------------------------------
-// Layout constants (must match Ui.cpp)
-// ------------------------------------------------------------
 
 static const int SCREEN_W      = 1280;
 static const int SCREEN_H      = 720;
@@ -30,10 +23,6 @@ static const unsigned COL_TEXT     = 0xE0E0E0;
 static const unsigned COL_SELECTED = 0x107C10;
 static const unsigned COL_HINT     = 0x808080;
 
-// ------------------------------------------------------------
-// Helper - keep scrollTop in a valid range
-// ------------------------------------------------------------
-
 static int ClampScroll(int selected, int scrollTop, int total) {
     if (selected < scrollTop) {
         scrollTop = selected;
@@ -49,10 +38,6 @@ static int ClampScroll(int selected, int scrollTop, int total) {
 
     return scrollTop;
 }
-
-// ------------------------------------------------------------
-// Menu
-// ------------------------------------------------------------
 
 int Menu(const std::string& title,
          const std::vector<std::string>& items) {
