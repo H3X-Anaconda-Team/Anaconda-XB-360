@@ -7,13 +7,16 @@ Build/*
 *.pdb
 *.ilk
 *.map
+*.log
 
 # --- Visual Studio ---
 .vs/
 *.suo
 *.user
+*.userosscache
 *.sln.docstates
 *.VC.db
+*.VC.VC.opendb
 ipch/
 Debug/
 Release/
@@ -35,13 +38,14 @@ desktop.ini
 .idea/
 *.swp
 
-# --- Large archives (use Releases, not the repo) ---
+# --- Large archives (host in Releases, not the repo) ---
 *.7z
 *.zip
 *.rar
 
-# --- Keep .gitkeep everywhere so folders persist ---
-!.gitkeep
+# --- Environment ---
+.env
+.env.local
 
-# --- Logs ---
-*.log
+# --- Keep .gitkeep everywhere ---
+!.gitkeep
