@@ -1,0 +1,18 @@
+{
+  "catalog_dir": "Catalog",
+  "required_package_fields": [
+    "itemTitle",
+    "itemVersion",
+    "itemAuthor",
+    "itemDescription",
+    "dataurl",
+    "path",
+    "reload"
+  ],
+  "valid_reload_values": ["True", "False"],
+  "check_urls_online": true,
+  "url_timeout_seconds": 10,
+  "ignore_files": [
+    ".gitkeep"
+  ]
+}
