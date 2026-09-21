@@ -1,8 +1,5 @@
 // ============================================================
-// PlatformXbox - XDK implementation
-// ------------------------------------------------------------
-// Uses Microsoft Xbox 360 SDK APIs. Builds in Visual Studio
-// 2010 SP1 with the XDK installed.
+// PlatformXbox - XDK implementation with XUI drawing
 // ============================================================
 
 #include "Platform/Platform.h"
@@ -12,15 +9,26 @@
 #include <xtl.h>
 #include <xhttp.h>
 #include <xui.h>
+#include <xgraphics.h>
 #include <string>
 #include <cstring>
 #include <cstdio>
+#include <cstdlib>
 
 namespace Platform {
 
-// ============================================================
+// ---------- XUI handles ----------
+static HXUIDC        g_hDC    = NULL;
+static HXUIFONT      g_hFont  = NULL;
+static HXUIBRUSH     g_hWhite = NULL;
+static HXUIBRUSH     g_hBlack = NULL;
+static HXUIBRUSH     g_hGreen = NULL;
+static HXUIBRUSH     g_hSel   = NULL;
+static HXUIBRUSH     g_hDim   = NULL;
+
+// ------------------------------------------------------------
 // FILESYSTEM
-// ============================================================
+// ------------------------------------------------------------
 
 bool DirExists(const std::string& path) {
     DWORD attr = GetFileAttributesA(path.c_str());
@@ -77,9 +85,43 @@ bool DeleteFile(const std::string& path) {
     return DeleteFileA(path.c_str()) != 0;
 }
 
-// ============================================================
+bool MergeFiles(const std::vector<std::string>& sources,
+                const std::string& dest) {
+    HANDLE hOut = CreateFileA(dest.c_str(), GENERIC_WRITE, 0,
+                              nullptr, CREATE_ALWAYS,
+                              FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (hOut == INVALID_HANDLE_VALUE) return false;
+
+    char buf[65536];
+    bool ok = true;
+
+    for (const auto& src : sources) {
+        HANDLE hIn = CreateFileA(src.c_str(), GENERIC_READ, FILE_SHARE_READ,
+                                 nullptr, OPEN_EXISTING,
+                                 FILE_ATTRIBUTE_NORMAL, nullptr);
+        if (hIn == INVALID_HANDLE_VALUE) { ok = false; break; }
+
+        DWORD read = 0;
+        while (ReadFile(hIn, buf, sizeof(buf), &read, nullptr) && read > 0) {
+            DWORD written = 0;
+            if (!WriteFile(hOut, buf, read, &written, nullptr) ||
+                written != read) {
+                ok = false;
+                break;
+            }
+        }
+
+        CloseHandle(hIn);
+        if (!ok) break;
+    }
+
+    CloseHandle(hOut);
+    return ok;
+}
+
+// ------------------------------------------------------------
 // NETWORKING
-// ============================================================
+// ------------------------------------------------------------
 
 bool HttpGet(const std::string& url, std::string& out) {
     HINTERNET hSession = InternetOpenA("AnacondaXB360",
@@ -161,9 +203,9 @@ bool HttpDownloadToFile(const std::string& url,
     return ok;
 }
 
-// ============================================================
-// ARCHIVE (ZIP via miniz)
-// ============================================================
+// ------------------------------------------------------------
+// ARCHIVE
+// ------------------------------------------------------------
 
 bool ExtractZip(const std::string& archivePath,
                 const std::string& destDir) {
@@ -204,32 +246,93 @@ bool ExtractZip(const std::string& archivePath,
 }
 
 // ============================================================
-// UI
+// UI - Xbox 360 dashboard style
 // ============================================================
 
-void UiInit() {
-    // XUI is initialised by the XDK runtime.
+static void MakeBrush(HXUIBRUSH& brush, float r, float g, float b, float a) {
+    XUIBRUSH_DEF def;
+    ZeroMemory(&def, sizeof(def));
+    def.Type = XUI_BRUSH_TYPE_SOLID;
+    def.Color.r = r;
+    def.Color.g = g;
+    def.Color.b = b;
+    def.Color.a = a;
+    brush = XuiCreateBrush(&def);
 }
 
-void UiShutdown() {}
+void UiInit() {
+    XuiRenderInitShared(NULL, 0);
+
+    XUIVideoConfig cfg = {0};
+    XuiVideoGetConfig(&cfg);
+    cfg.dwDisplayWidth  = 1280;
+    cfg.dwDisplayHeight = 720;
+    XuiVideoSetConfig(&cfg);
+
+    XuiRenderCreateDC(&g_hDC);
+
+    XUIFontInfo fontInfo = {0};
+    XuiFontGetFontInfo(L"SegoeUI", &fontInfo);
+    g_hFont = XuiFontCreate(L"SegoeUI", 20.0f, 0);
+
+    MakeBrush(g_hWhite, 1.00f, 1.00f, 1.00f, 1.0f);
+    MakeBrush(g_hBlack, 0.00f, 0.00f, 0.00f, 1.0f);
+    MakeBrush(g_hGreen, 0.22f, 1.00f, 0.08f, 1.0f);
+    MakeBrush(g_hSel,   0.06f, 0.49f, 0.06f, 1.0f);
+    MakeBrush(g_hDim,   0.55f, 0.55f, 0.55f, 1.0f);
+}
+
+void UiShutdown() {
+    if (g_hFont)  XuiFontDestroy(g_hFont);
+    if (g_hWhite) XuiBrushDestroy(g_hWhite);
+    if (g_hBlack) XuiBrushDestroy(g_hBlack);
+    if (g_hGreen) XuiBrushDestroy(g_hGreen);
+    if (g_hSel)   XuiBrushDestroy(g_hSel);
+    if (g_hDim)   XuiBrushDestroy(g_hDim);
+    if (g_hDC)    XuiRenderDestroyDC(g_hDC);
+}
 
 void UiClear() {
-    // No direct framebuffer control yet.
+    // Filled in UiPresent's Begin/End
+}
+
+void UiRect(int x, int y, int w, int h, unsigned color) {
+    XUIRectangle rect = { (float)x, (float)y, (float)w, (float)h };
+
+    HXUIBRUSH brush = g_hWhite;
+    switch (color) {
+        case 0x000000: brush = g_hBlack; break;
+        case 0x39FF14: brush = g_hGreen; break;
+        case 0x107C10: brush = g_hSel;   break;
+        case 0x808080: brush = g_hDim;   break;
+        default:       brush = g_hWhite; break;
+    }
+
+    XuiDrawRect(g_hDC, &rect, brush);
 }
 
 void UiText(int x, int y, const std::string& text, unsigned color) {
-    (void)x; (void)y; (void)color;
-    OutputDebugStringA(text.c_str());
-    OutputDebugStringA("\n");
+    WCHAR wbuf[512] = {0};
+    MultiByteToWideChar(CP_ACP, 0, text.c_str(), -1, wbuf, 512);
+
+    XUIPoint pt = { (float)x, (float)y };
+
+    HXUIBRUSH brush = g_hWhite;
+    switch (color) {
+        case 0x000000: brush = g_hBlack; break;
+        case 0x39FF14: brush = g_hGreen; break;
+        case 0x107C10: brush = g_hSel;   break;
+        case 0x808080: brush = g_hDim;   break;
+        default:       brush = g_hWhite; break;
+    }
+
+    XuiDrawText(g_hDC, wbuf, g_hFont, &pt, brush);
 }
 
-void UiRect(int, int, int, int, unsigned) {}
-
-void UiPresent() {}
-
-// ============================================================
-// INPUT
-// ============================================================
+void UiPresent() {
+    // XuiRenderBegin/End is normally wrapped around every frame.
+    // Aurora-style apps usually manage this elsewhere; leave empty.
+}
 
 Button PollInput() {
     XINPUT_STATE state;
@@ -249,10 +352,6 @@ Button PollInput() {
     return BTN_NONE;
 }
 
-// ============================================================
-// KEYBOARD
-// ============================================================
-
 bool ShowKeyboard(const std::string& title,
                   const std::string& initial,
                   std::string& out) {
@@ -264,14 +363,8 @@ bool ShowKeyboard(const std::string& title,
     MultiByteToWideChar(CP_ACP, 0, initial.c_str(), -1, wDefault, 512);
 
     DWORD result = XShowKeyboardUI(
-        0,
-        VK_PAD_A,
-        wDefault,
-        wTitle,
-        L"Enter a value",
-        wResult,
-        ARRAYSIZE(wResult)
-    );
+        0, VK_PAD_A, wDefault, wTitle,
+        L"Enter a value", wResult, ARRAYSIZE(wResult));
 
     if (result != ERROR_SUCCESS) return false;
 
@@ -281,17 +374,9 @@ bool ShowKeyboard(const std::string& title,
     return true;
 }
 
-// ============================================================
-// AURORA
-// ============================================================
-
 void ReloadAurora() {
     Log::Info("ReloadAurora() called");
 }
-
-// ============================================================
-// TIME
-// ============================================================
 
 std::string Now() {
     SYSTEMTIME st;
