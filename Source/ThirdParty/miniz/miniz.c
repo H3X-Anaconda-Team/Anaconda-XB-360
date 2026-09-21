@@ -3494,14 +3494,14 @@ static int mz_stat64(const char *path, struct __stat64 *buffer)
     }
 #endif /* #ifndef MINIZ_NO_ARCHIVE_WRITING_APIS*/
 
-    static mz_bool mz_zip_set_file_times(const char *pFilename, MZ_TIME_T access_time, MZ_TIME_T modified_time)
-    {
-        struct utimbuf t;
-
-        memset(&t, 0, sizeof(t));
-        t.actime = access_time;
-        t.modtime = modified_time;
-
+    mz_bool mz_zip_set_file_times(const char *pFilename, time_t access_time, time_t modified_time)
+{
+    // ... some struct ...
+    struct utimbuf t;
+    t.actime = access_time;
+    t.modtime = modified_time;
+    return !utime(pFilename, &t);
+}
         return !utime(pFilename, &t);
     }
 #endif /* #ifndef MINIZ_NO_STDIO */
