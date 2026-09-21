@@ -1,5 +1,11 @@
 // ============================================================
-// PlatformXbox - libxenon implementation
+// PlatformXbox - standalone build (no libxenon dependency)
+// ------------------------------------------------------------
+// Uses only standard C library functions. Compiles and links
+// with the xenon toolchain alone.
+//
+// Once the build pipeline is proven, this file gets replaced
+// with the real libxenon version.
 // ============================================================
 
 #include "Platform/Platform.h"
@@ -12,14 +18,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <time.h>
-
-// ---- libxenon headers ----
-extern "C" {
-    #include <console/console.h>
-    #include <xenos/xenos.h>
-    #include <usb/usbmain.h>
-    #include <input/input.h>
-}
 
 namespace Platform {
 
@@ -83,7 +81,7 @@ bool DeleteFile(const std::string& path) {
 // ============================================================
 
 bool HttpGet(const std::string& url, std::string& out) {
-    Log::Warn("HttpGet stub called for: " + url);
+    Log::Warn("HttpGet not implemented: " + url);
     out.clear();
     return false;
 }
@@ -140,26 +138,21 @@ bool ExtractZip(const std::string& archivePath,
 }
 
 // ============================================================
-// UI - uses plain printf, libxenon console_init() redirects it
+// UI - standard printf
 // ============================================================
 
 void UiInit() {
-    xenos_init(VIDEO_MODE_AUTO);
-    console_init();
+    // No graphics init yet.
 }
 
 void UiShutdown() {}
 
 void UiClear() {
-    // Simple newline scroll. Replace with console_clrscr() later
-    // once the correct function name for your libxenon is known.
     for (int i = 0; i < 30; ++i) printf("\n");
 }
 
 void UiText(int x, int y, const std::string& text, unsigned color) {
-    (void)x;
-    (void)y;
-    (void)color;
+    (void)x; (void)y; (void)color;
     printf("%s\n", text.c_str());
 }
 
@@ -172,8 +165,17 @@ void UiPresent() {}
 // ============================================================
 
 Button PollInput() {
-    usb_do_poll();
-    return BTN_NONE;
+    int c = getchar();
+    switch (c) {
+        case 'w':  return BTN_UP;
+        case 's':  return BTN_DOWN;
+        case 'a':  return BTN_LEFT;
+        case 'd':  return BTN_RIGHT;
+        case '\n': return BTN_A;
+        case 27:   return BTN_B;
+        case 'b':  return BTN_BACK;
+        default:   return BTN_NONE;
+    }
 }
 
 // ============================================================
@@ -184,6 +186,7 @@ bool ShowKeyboard(const std::string& title,
                   const std::string& initial,
                   std::string& out) {
     printf("%s [%s]: ", title.c_str(), initial.c_str());
+    fflush(stdout);
 
     char buf[512];
     if (!fgets(buf, sizeof(buf), stdin)) return false;
@@ -199,7 +202,7 @@ bool ShowKeyboard(const std::string& title,
 // ============================================================
 
 void ReloadAurora() {
-    Log::Info("ReloadAurora() called (no-op under libxenon)");
+    Log::Info("ReloadAurora() called (stub)");
 }
 
 // ============================================================
@@ -220,4 +223,4 @@ unsigned long Ticks() {
     return (unsigned long)(clock() * 1000ULL / CLOCKS_PER_SEC);
 }
 
-} // namespace Platform
+} // namespace Platform} // namespace Platform
