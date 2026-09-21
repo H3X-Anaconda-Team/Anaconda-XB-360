@@ -1,23 +1,20 @@
 // ============================================================
-// PlatformXbox - standalone build (no libxenon dependency)
+// PlatformXbox - XDK implementation
 // ------------------------------------------------------------
-// Uses only standard C library functions. Compiles and links
-// with the xenon toolchain alone.
-//
-// Once the build pipeline is proven, this file gets replaced
-// with the real libxenon version.
+// Uses Microsoft Xbox 360 SDK APIs. Builds in Visual Studio
+// 2010 SP1 with the XDK installed.
 // ============================================================
 
 #include "Platform/Platform.h"
 #include "Core/Log/Log.h"
 #include "ThirdParty/miniz/miniz.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <unistd.h>
-#include <time.h>
+#include <xtl.h>
+#include <xhttp.h>
+#include <xui.h>
+#include <string>
+#include <cstring>
+#include <cstdio>
 
 namespace Platform {
 
@@ -26,54 +23,58 @@ namespace Platform {
 // ============================================================
 
 bool DirExists(const std::string& path) {
-    struct stat st;
-    if (stat(path.c_str(), &st) != 0) return false;
-    return S_ISDIR(st.st_mode);
+    DWORD attr = GetFileAttributesA(path.c_str());
+    return (attr != INVALID_FILE_ATTRIBUTES) && (attr & FILE_ATTRIBUTE_DIRECTORY);
 }
 
 bool CreateDir(const std::string& path) {
-    return mkdir(path.c_str(), 0755) == 0 || DirExists(path);
+    return CreateDirectoryA(path.c_str(), nullptr) != 0 || DirExists(path);
 }
 
 bool FileExists(const std::string& path) {
-    struct stat st;
-    return stat(path.c_str(), &st) == 0;
+    DWORD attr = GetFileAttributesA(path.c_str());
+    return (attr != INVALID_FILE_ATTRIBUTES) && !(attr & FILE_ATTRIBUTE_DIRECTORY);
 }
 
 bool ReadFile(const std::string& path, std::string& out) {
-    FILE* f = fopen(path.c_str(), "rb");
-    if (!f) return false;
-    fseek(f, 0, SEEK_END);
-    long sz = ftell(f);
-    fseek(f, 0, SEEK_SET);
-    if (sz < 0) { fclose(f); return false; }
-    out.resize((size_t)sz);
-    if (sz > 0) {
-        size_t got = fread(&out[0], 1, (size_t)sz, f);
-        out.resize(got);
-    }
-    fclose(f);
+    HANDLE h = CreateFileA(path.c_str(), GENERIC_READ, FILE_SHARE_READ,
+                           nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (h == INVALID_HANDLE_VALUE) return false;
+
+    DWORD size = GetFileSize(h, nullptr);
+    out.resize(size);
+
+    DWORD read = 0;
+    ReadFile(h, &out[0], size, &read, nullptr);
+    CloseHandle(h);
+    out.resize(read);
     return true;
 }
 
 bool WriteFile(const std::string& path, const std::string& data) {
-    FILE* f = fopen(path.c_str(), "wb");
-    if (!f) return false;
-    size_t wrote = fwrite(data.data(), 1, data.size(), f);
-    fclose(f);
-    return wrote == data.size();
+    HANDLE h = CreateFileA(path.c_str(), GENERIC_WRITE, 0,
+                           nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (h == INVALID_HANDLE_VALUE) return false;
+
+    DWORD written = 0;
+    WriteFile(h, data.data(), (DWORD)data.size(), &written, nullptr);
+    CloseHandle(h);
+    return written == data.size();
 }
 
 bool AppendFile(const std::string& path, const std::string& data) {
-    FILE* f = fopen(path.c_str(), "ab");
-    if (!f) return false;
-    size_t wrote = fwrite(data.data(), 1, data.size(), f);
-    fclose(f);
-    return wrote == data.size();
+    HANDLE h = CreateFileA(path.c_str(), FILE_APPEND_DATA, FILE_SHARE_READ,
+                           nullptr, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (h == INVALID_HANDLE_VALUE) return false;
+
+    DWORD written = 0;
+    WriteFile(h, data.data(), (DWORD)data.size(), &written, nullptr);
+    CloseHandle(h);
+    return written == data.size();
 }
 
 bool DeleteFile(const std::string& path) {
-    return remove(path.c_str()) == 0;
+    return DeleteFileA(path.c_str()) != 0;
 }
 
 // ============================================================
@@ -81,18 +82,83 @@ bool DeleteFile(const std::string& path) {
 // ============================================================
 
 bool HttpGet(const std::string& url, std::string& out) {
-    Log::Warn("HttpGet not implemented: " + url);
+    HINTERNET hSession = InternetOpenA("AnacondaXB360",
+                                       INTERNET_OPEN_TYPE_DIRECT,
+                                       nullptr, nullptr, 0);
+    if (!hSession) return false;
+
+    HINTERNET hUrl = InternetOpenUrlA(hSession, url.c_str(),
+                                      nullptr, 0,
+                                      INTERNET_FLAG_RELOAD |
+                                      INTERNET_FLAG_NO_CACHE_WRITE, 0);
+    if (!hUrl) {
+        InternetCloseHandle(hSession);
+        return false;
+    }
+
     out.clear();
-    return false;
+    char buf[8192];
+    DWORD read = 0;
+    while (InternetReadFile(hUrl, buf, sizeof(buf), &read) && read > 0) {
+        out.append(buf, read);
+    }
+
+    InternetCloseHandle(hUrl);
+    InternetCloseHandle(hSession);
+    return !out.empty();
 }
 
 bool HttpDownloadToFile(const std::string& url,
                         const std::string& destPath,
                         void (*progress)(size_t, size_t)) {
-    std::string data;
-    if (!HttpGet(url, data)) return false;
-    if (progress) progress(data.size(), data.size());
-    return WriteFile(destPath, data);
+    HINTERNET hSession = InternetOpenA("AnacondaXB360",
+                                       INTERNET_OPEN_TYPE_DIRECT,
+                                       nullptr, nullptr, 0);
+    if (!hSession) return false;
+
+    HINTERNET hUrl = InternetOpenUrlA(hSession, url.c_str(),
+                                      nullptr, 0,
+                                      INTERNET_FLAG_RELOAD |
+                                      INTERNET_FLAG_NO_CACHE_WRITE, 0);
+    if (!hUrl) {
+        InternetCloseHandle(hSession);
+        return false;
+    }
+
+    char lenBuf[32] = {0};
+    DWORD lenSize = sizeof(lenBuf);
+    HttpQueryInfoA(hUrl, HTTP_QUERY_CONTENT_LENGTH, lenBuf, &lenSize, nullptr);
+    size_t total = (size_t)strtoul(lenBuf, nullptr, 10);
+
+    HANDLE hFile = CreateFileA(destPath.c_str(), GENERIC_WRITE, 0,
+                               nullptr, CREATE_ALWAYS,
+                               FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (hFile == INVALID_HANDLE_VALUE) {
+        InternetCloseHandle(hUrl);
+        InternetCloseHandle(hSession);
+        return false;
+    }
+
+    char buf[8192];
+    DWORD read = 0;
+    size_t done = 0;
+    bool ok = true;
+
+    while (InternetReadFile(hUrl, buf, sizeof(buf), &read) && read > 0) {
+        DWORD written = 0;
+        if (!WriteFile(hFile, buf, read, &written, nullptr) ||
+            written != read) {
+            ok = false;
+            break;
+        }
+        done += read;
+        if (progress) progress(done, total);
+    }
+
+    CloseHandle(hFile);
+    InternetCloseHandle(hUrl);
+    InternetCloseHandle(hSession);
+    return ok;
 }
 
 // ============================================================
@@ -117,7 +183,7 @@ bool ExtractZip(const std::string& archivePath,
 
         std::string fullPath = destDir;
         if (!fullPath.empty() && fullPath.back() != '\\' && fullPath.back() != '/') {
-            fullPath += "/";
+            fullPath += "\\";
         }
         fullPath += st.m_filename;
 
@@ -138,22 +204,23 @@ bool ExtractZip(const std::string& archivePath,
 }
 
 // ============================================================
-// UI - standard printf
+// UI
 // ============================================================
 
 void UiInit() {
-    // No graphics init yet.
+    // XUI is initialised by the XDK runtime.
 }
 
 void UiShutdown() {}
 
 void UiClear() {
-    for (int i = 0; i < 30; ++i) printf("\n");
+    // No direct framebuffer control yet.
 }
 
 void UiText(int x, int y, const std::string& text, unsigned color) {
     (void)x; (void)y; (void)color;
-    printf("%s\n", text.c_str());
+    OutputDebugStringA(text.c_str());
+    OutputDebugStringA("\n");
 }
 
 void UiRect(int, int, int, int, unsigned) {}
@@ -165,17 +232,21 @@ void UiPresent() {}
 // ============================================================
 
 Button PollInput() {
-    int c = getchar();
-    switch (c) {
-        case 'w':  return BTN_UP;
-        case 's':  return BTN_DOWN;
-        case 'a':  return BTN_LEFT;
-        case 'd':  return BTN_RIGHT;
-        case '\n': return BTN_A;
-        case 27:   return BTN_B;
-        case 'b':  return BTN_BACK;
-        default:   return BTN_NONE;
-    }
+    XINPUT_STATE state;
+    if (XInputGetState(0, &state) != ERROR_SUCCESS) return BTN_NONE;
+
+    WORD b = state.Gamepad.wButtons;
+    if (b & XINPUT_GAMEPAD_DPAD_UP)     return BTN_UP;
+    if (b & XINPUT_GAMEPAD_DPAD_DOWN)   return BTN_DOWN;
+    if (b & XINPUT_GAMEPAD_DPAD_LEFT)   return BTN_LEFT;
+    if (b & XINPUT_GAMEPAD_DPAD_RIGHT)  return BTN_RIGHT;
+    if (b & XINPUT_GAMEPAD_A)           return BTN_A;
+    if (b & XINPUT_GAMEPAD_B)           return BTN_B;
+    if (b & XINPUT_GAMEPAD_X)           return BTN_X;
+    if (b & XINPUT_GAMEPAD_Y)           return BTN_Y;
+    if (b & XINPUT_GAMEPAD_START)       return BTN_START;
+    if (b & XINPUT_GAMEPAD_BACK)        return BTN_BACK;
+    return BTN_NONE;
 }
 
 // ============================================================
@@ -185,15 +256,28 @@ Button PollInput() {
 bool ShowKeyboard(const std::string& title,
                   const std::string& initial,
                   std::string& out) {
-    printf("%s [%s]: ", title.c_str(), initial.c_str());
-    fflush(stdout);
+    WCHAR wTitle[128]   = {0};
+    WCHAR wDefault[512] = {0};
+    WCHAR wResult[512]  = {0};
 
-    char buf[512];
-    if (!fgets(buf, sizeof(buf), stdin)) return false;
+    MultiByteToWideChar(CP_ACP, 0, title.c_str(),   -1, wTitle,   128);
+    MultiByteToWideChar(CP_ACP, 0, initial.c_str(), -1, wDefault, 512);
 
-    size_t len = strlen(buf);
-    if (len && buf[len-1] == '\n') buf[len-1] = 0;
-    out = buf;
+    DWORD result = XShowKeyboardUI(
+        0,
+        VK_PAD_A,
+        wDefault,
+        wTitle,
+        L"Enter a value",
+        wResult,
+        ARRAYSIZE(wResult)
+    );
+
+    if (result != ERROR_SUCCESS) return false;
+
+    char narrow[512] = {0};
+    WideCharToMultiByte(CP_ACP, 0, wResult, -1, narrow, 512, nullptr, nullptr);
+    out = narrow;
     return true;
 }
 
@@ -202,7 +286,7 @@ bool ShowKeyboard(const std::string& title,
 // ============================================================
 
 void ReloadAurora() {
-    Log::Info("ReloadAurora() called (stub)");
+    Log::Info("ReloadAurora() called");
 }
 
 // ============================================================
@@ -210,17 +294,17 @@ void ReloadAurora() {
 // ============================================================
 
 std::string Now() {
-    time_t t = time(nullptr);
-    struct tm* lt = localtime(&t);
-    char buf[32];
+    SYSTEMTIME st;
+    GetLocalTime(&st);
+    char buf[64];
     snprintf(buf, sizeof(buf), "%04d-%02d-%02d %02d:%02d:%02d",
-             lt->tm_year + 1900, lt->tm_mon + 1, lt->tm_mday,
-             lt->tm_hour, lt->tm_min, lt->tm_sec);
+             st.wYear, st.wMonth, st.wDay,
+             st.wHour, st.wMinute, st.wSecond);
     return buf;
 }
 
 unsigned long Ticks() {
-    return (unsigned long)(clock() * 1000ULL / CLOCKS_PER_SEC);
+    return GetTickCount();
 }
 
-} // namespace Platform} // namespace Platform
+} // namespace Platform
