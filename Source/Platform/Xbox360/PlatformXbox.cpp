@@ -1,9 +1,5 @@
 // ============================================================
 // PlatformXbox - libxenon implementation
-// ------------------------------------------------------------
-// Uses POSIX APIs and libxenon extensions. Builds with xenon-gcc.
-//
-// Build with:  make
 // ============================================================
 
 #include "Platform/Platform.h"
@@ -19,15 +15,10 @@
 
 // ---- libxenon headers ----
 extern "C" {
-    #include <xenon_soc/xenon_power.h>
-    #include <xenon_smc/xenon_smc.h>
+    #include <console/console.h>
+    #include <xenos/xenos.h>
     #include <usb/usbmain.h>
     #include <input/input.h>
-    #include <console/console.h>
-    #include <network/network.h>
-    #include <xenos/xe.h>
-    #include <xenos/xenos.h>
-    #include <xenos/edram.h>
 }
 
 namespace Platform {
@@ -92,8 +83,6 @@ bool DeleteFile(const std::string& path) {
 // ============================================================
 
 bool HttpGet(const std::string& url, std::string& out) {
-    // Placeholder — replace with libxenon socket code once the
-    // build links. For now returns false so nothing crashes.
     Log::Warn("HttpGet stub called for: " + url);
     out.clear();
     return false;
@@ -159,9 +148,7 @@ void UiInit() {
     console_init();
 }
 
-void UiShutdown() {
-    // Nothing to release on libxenon.
-}
+void UiShutdown() {}
 
 void UiClear() {
     console_clrscr();
@@ -175,14 +162,9 @@ void UiText(int x, int y, const std::string& text, unsigned color) {
     console_printf("%s\n", text.c_str());
 }
 
-void UiRect(int, int, int, int, unsigned) {
-    // Basic libxenon console doesn't support rectangles.
-    // Replace with xenos framebuffer code for a real UI.
-}
+void UiRect(int, int, int, int, unsigned) {}
 
-void UiPresent() {
-    // console_printf draws directly.
-}
+void UiPresent() {}
 
 // ============================================================
 // INPUT
