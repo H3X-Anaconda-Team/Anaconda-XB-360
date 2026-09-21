@@ -5,6 +5,6 @@
 // views. Currently empty.
 // ============================================================
 
-#include "UI/Ui.h"
+#include "Ui/Ui.h"
 
 // Nothing here yet.
