@@ -39,6 +39,16 @@ Watch the repo or star it to be notified the moment a build goes public.
 
 </div>
 
+<div align="center">
+
+## Connect
+
+[![Telegram](https://img.shields.io/badge/Telegram-Anaconda_XB_360-26A5E4?style=for-the-badge&logo=telegram&logoColor=white)](https://t.me/anacondaxbox)
+
+*More socials coming soon.*
+
+</div>
+
 ---
 
 ## Compatibility
