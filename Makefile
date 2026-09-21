@@ -1,5 +1,5 @@
 # ============================================================
-# Anaconda XB 360 - libxenon build
+# Anaconda XB 360 - libxenon build (container)
 # ============================================================
 
 DEVKITXENON ?= /usr/local/xenon
@@ -13,7 +13,7 @@ INCLUDES = -IInclude -ISource -ISource/ThirdParty/miniz -I$(DEVKITXENON)/usr/inc
 CXXFLAGS = -O2 -Wall -std=c++11 -D_XBOX $(INCLUDES)
 CFLAGS   = -O2 -Wall -D_XBOX $(INCLUDES)
 
-LDFLAGS = -L$(DEVKITXENON)/lib -L$(DEVKITXENON)/usr/lib -lxenon -lm
+LDFLAGS = -L$(DEVKITXENON)/lib -L/build/libxenon/ports/xenon -lxenon -lm
 
 TARGET = Build/AnacondaXB360.elf
 XEX    = Build/AnacondaXB360.xex
