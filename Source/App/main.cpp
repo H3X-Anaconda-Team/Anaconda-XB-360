@@ -1,12 +1,3 @@
-// ============================================================
-// Anaconda XB 360 - Entry Point
-// ------------------------------------------------------------
-// This file contains:
-//   - LoadConfig / SaveConfig helpers
-//   - the top-level menu loop
-//   - dispatch into Repo, Ui, Installer
-// ============================================================
-
 #include "Anaconda.h"
 #include "Core/Log/Log.h"
 #include "Core/Config/Config.h"
@@ -18,10 +9,6 @@
 #include <string>
 #include <vector>
 
-// ------------------------------------------------------------
-// Helpers
-// ------------------------------------------------------------
-
 static std::string BuildCategoryLabel(const Category& c) {
     if (c.isExternal) {
         return "[Free60] " + c.name;
@@ -32,10 +19,6 @@ static std::string BuildCategoryLabel(const Category& c) {
 static std::string BuildPackageLabel(const Package& p) {
     return p.title + "  v" + p.version + "  by " + p.author;
 }
-
-// ------------------------------------------------------------
-// Category menu
-// ------------------------------------------------------------
 
 static int ShowCategoryMenu(const std::vector<Category>& cats) {
     std::vector<std::string> labels;
@@ -49,10 +32,6 @@ static int ShowCategoryMenu(const std::vector<Category>& cats) {
     std::string title = std::string(ANACONDA_NAME) + " v" + ANACONDA_VERSION;
     return Ui::Menu(title, labels);
 }
-
-// ------------------------------------------------------------
-// Package menu for a single category
-// ------------------------------------------------------------
 
 static void OpenCategory(const Category& cat) {
     std::vector<Package> pkgs;
@@ -74,11 +53,10 @@ static void OpenCategory(const Category& cat) {
     }
 
     int pick = Ui::Menu(cat.name, labels);
-    if (pick < 0) return;   // user pressed B
+    if (pick < 0) return;
 
     const Package& pkg = pkgs[pick];
 
-    // Show the description before confirming
     std::string body = pkg.description;
     if (!body.empty()) body += "\n\n";
     body += "Version: " + pkg.version + "\n";
@@ -98,10 +76,6 @@ static void OpenCategory(const Category& cat) {
     }
 }
 
-// ------------------------------------------------------------
-// Settings
-// ------------------------------------------------------------
-
 static void OpenSettings(std::string& repoUrl,
                          std::vector<Category>& cats) {
     std::string newUrl;
@@ -111,15 +85,10 @@ static void OpenSettings(std::string& repoUrl,
     repoUrl = newUrl;
     Config::SaveRepoUrl(repoUrl);
 
-    // Reload the catalog with the new URL
     if (!Repo::LoadCategories(repoUrl, cats)) {
         Ui::Message("Settings", "Saved, but could not load the new repository.");
     }
 }
-
-// ------------------------------------------------------------
-// Main
-// ------------------------------------------------------------
 
 int main() {
     Log::Init();
@@ -127,12 +96,10 @@ int main() {
 
     Platform::UiInit();
 
-    // --- Load config ---
     std::string repoUrl;
     Config::Load(repoUrl);
     Log::Info("Repo URL: " + repoUrl);
 
-    // --- Load categories ---
     std::vector<Category> cats;
     if (!Repo::LoadCategories(repoUrl, cats)) {
         Ui::Message(ANACONDA_NAME,
@@ -144,11 +111,9 @@ int main() {
 
     Log::Info("Loaded " + std::to_string(cats.size()) + " categories");
 
-    // --- Main loop ---
     while (true) {
         int pick = ShowCategoryMenu(cats);
 
-        // -1 means the user pressed B / Back -> exit
         if (pick < 0) break;
 
         if (pick == 0) {
@@ -156,7 +121,6 @@ int main() {
             continue;
         }
 
-        // pick - 1 to skip the "Settings" entry
         const Category& cat = cats[pick - 1];
         OpenCategory(cat);
     }
