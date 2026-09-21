@@ -20,7 +20,7 @@
 #define ANACONDA_CACHE_DIR   "Hdd:\\Anaconda\\cache\\"
 #define ANACONDA_CONFIG      "Hdd:\\Anaconda\\anaconda.cfg"
 #define ANACONDA_LOG         "Hdd:\\Anaconda\\anaconda.log"
-#define ANACONDA_TEMP_7Z     "Hdd:\\Anaconda\\cache\\package.7z"
+#define ANACONDA_TEMP_ZIP    "Hdd:\\Anaconda\\cache\\package.zip"
 
 // ---- Standard library ----
 #include <string>
