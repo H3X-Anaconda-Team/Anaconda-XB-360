@@ -3,9 +3,6 @@
          xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <ItemGroup>
-    <Filter Include="Include">
-      <UniqueIdentifier>{10000000-0000-0000-0000-000000000001}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source">
       <UniqueIdentifier>{10000000-0000-0000-0000-000000000002}</UniqueIdentifier>
     </Filter>
@@ -75,8 +72,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ClInclude Include="Include\Anaconda.h">
-      <Filter>Include</Filter>
+    <ClInclude Include="Source\App\Anaconda.h">
+      <Filter>Source\App</Filter>
     </ClInclude>
     <ClInclude Include="Source\Core\Log\Log.h">
       <Filter>Source\Core</Filter>
