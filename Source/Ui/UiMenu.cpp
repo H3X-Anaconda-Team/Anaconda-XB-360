@@ -1,4 +1,3 @@
-
 #include "Ui/Ui.h"
 #include "Platform/Platform.h"
 #include "Core/Log/Log.h"
@@ -11,32 +10,31 @@ namespace Ui {
 static const int SCREEN_W      = 1280;
 static const int SCREEN_H      = 720;
 
-static const int MARGIN_X      = 60;
 static const int TITLE_Y       = 40;
-static const int LIST_START_Y  = 140;
-static const int LINE_HEIGHT   = 40;
-static const int MAX_VISIBLE   = 12;
+static const int TITLE_H       = 80;
+static const int PANEL_X       = 60;
 
-static const unsigned COL_BG       = 0x0F1410;
-static const unsigned COL_TITLE    = 0x39FF14;
-static const unsigned COL_TEXT     = 0xE0E0E0;
-static const unsigned COL_SELECTED = 0x107C10;
+static const int LIST_Y        = 160;
+static const int ITEM_H        = 60;
+static const int ITEM_GAP      = 4;
+static const int MAX_VISIBLE   = 8;
+
+static const unsigned COL_BG       = 0x000000;
+static const unsigned COL_TITLEBAR = 0x107C10;
+static const unsigned COL_ACCENT   = 0x39FF14;
+static const unsigned COL_ITEM     = 0x101410;
+static const unsigned COL_SEL      = 0x1B3D1B;
+static const unsigned COL_TEXT     = 0xFFFFFF;
 static const unsigned COL_HINT     = 0x808080;
 
-static int ClampScroll(int selected, int scrollTop, int total) {
-    if (selected < scrollTop) {
-        scrollTop = selected;
-    } else if (selected >= scrollTop + MAX_VISIBLE) {
-        scrollTop = selected - MAX_VISIBLE + 1;
-    }
+static int ClampScroll(int sel, int top, int total) {
+    if (sel < top) top = sel;
+    else if (sel >= top + MAX_VISIBLE) top = sel - MAX_VISIBLE + 1;
 
-    if (scrollTop < 0) scrollTop = 0;
-
-    if (total > MAX_VISIBLE && scrollTop > total - MAX_VISIBLE) {
-        scrollTop = total - MAX_VISIBLE;
-    }
-
-    return scrollTop;
+    if (top < 0) top = 0;
+    if (total > MAX_VISIBLE && top > total - MAX_VISIBLE)
+        top = total - MAX_VISIBLE;
+    return top;
 }
 
 int Menu(const std::string& title,
@@ -48,61 +46,58 @@ int Menu(const std::string& title,
     }
 
     const int total = (int)items.size();
-    int selected  = 0;
-    int scrollTop = 0;
+    int sel  = 0;
+    int top  = 0;
 
     while (true) {
         Platform::UiClear();
-
         Platform::UiRect(0, 0, SCREEN_W, SCREEN_H, COL_BG);
 
-        Platform::UiText(MARGIN_X, TITLE_Y, title, COL_TITLE);
+        // Title bar (green Xbox dash style)
+        Platform::UiRect(0, 0, SCREEN_W, TITLE_H, COL_TITLEBAR);
+        Platform::UiText(PANEL_X, TITLE_Y, title, COL_ACCENT);
 
-        Platform::UiRect(MARGIN_X, TITLE_Y + 50,
-                         SCREEN_W - 2 * MARGIN_X, 2, COL_TITLE);
-
-        scrollTop = ClampScroll(selected, scrollTop, total);
+        // List
+        top = ClampScroll(sel, top, total);
 
         for (int row = 0; row < MAX_VISIBLE; ++row) {
-            int idx = scrollTop + row;
+            int idx = top + row;
             if (idx >= total) break;
 
-            int y = LIST_START_Y + row * LINE_HEIGHT;
+            int y = LIST_Y + row * (ITEM_H + ITEM_GAP);
+            int w = SCREEN_W - 2 * PANEL_X;
 
-            if (idx == selected) {
-                Platform::UiRect(MARGIN_X - 10, y - 6,
-                                 SCREEN_W - 2 * MARGIN_X + 20,
-                                 LINE_HEIGHT, COL_SELECTED);
-                Platform::UiText(MARGIN_X, y,
-                                 "> " + items[idx], COL_TITLE);
+            if (idx == sel) {
+                Platform::UiRect(PANEL_X, y, w, ITEM_H, COL_SEL);
+                Platform::UiRect(PANEL_X, y, 6, ITEM_H, COL_ACCENT);
+                Platform::UiText(PANEL_X + 30, y + 18, items[idx], COL_ACCENT);
             } else {
-                Platform::UiText(MARGIN_X, y,
-                                 "  " + items[idx], COL_TEXT);
+                Platform::UiRect(PANEL_X, y, w, ITEM_H, COL_ITEM);
+                Platform::UiText(PANEL_X + 30, y + 18, items[idx], COL_TEXT);
             }
         }
 
+        // Scroll indicator
         if (total > MAX_VISIBLE) {
-            std::string pos = std::to_string(selected + 1)
-                            + " / "
-                            + std::to_string(total);
-            Platform::UiText(SCREEN_W - MARGIN_X - 120,
-                             TITLE_Y, pos, COL_HINT);
+            std::string pos = std::to_string(sel + 1)
+                            + " / " + std::to_string(total);
+            Platform::UiText(SCREEN_W - PANEL_X - 120, TITLE_Y, pos, COL_HINT);
         }
 
-        Platform::UiText(MARGIN_X, SCREEN_H - 50,
-                         "A = Select   B = Back", COL_HINT);
+        // Footer hint
+        Platform::UiText(PANEL_X, SCREEN_H - 50,
+                         "A = Select    B = Back", COL_HINT);
 
         Platform::UiPresent();
 
         Platform::Button b = Platform::PollInput();
 
         if (b == Platform::BTN_UP) {
-            selected = (selected - 1 + total) % total;
+            sel = (sel - 1 + total) % total;
         } else if (b == Platform::BTN_DOWN) {
-            selected = (selected + 1) % total;
+            sel = (sel + 1) % total;
         } else if (b == Platform::BTN_A) {
-            Log::Info("Menu selection: " + items[selected]);
-            return selected;
+            return sel;
         } else if (b == Platform::BTN_B || b == Platform::BTN_BACK) {
             return -1;
         }
