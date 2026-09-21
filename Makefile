@@ -8,7 +8,7 @@ CC  = $(DEVKITXENON)/bin/xenon-gcc
 CXX = $(DEVKITXENON)/bin/xenon-g++
 LD  = $(DEVKITXENON)/bin/xenon-ld
 
-INCLUDES = -IInclude -ISource -ISource/ThirdParty/miniz -I$(DEVKITXENON)/usr/include
+INCLUDES = -IInclude -ISource -ISource/ThirdParty/miniz -I$(DEVKITXENON)/usr/include -I$(DEVKITXENON)/xenon/include
 
 CXXFLAGS = -O2 -Wall -std=c++11 -D_XBOX $(INCLUDES)
 CFLAGS   = -O2 -Wall -D_XBOX $(INCLUDES)
